@@ -1,0 +1,5 @@
+parameters:
+
+    wow.characters:
+        - name: 'poledrae'
+          realm: 'hyjal'

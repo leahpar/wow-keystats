@@ -1,0 +1,145 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <style>
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 100px;
+        }
+
+        table td, table th {
+            text-align: center;
+            padding: 5px;
+            border-bottom: #525252 1px solid;
+        }
+
+        .characterIlvl {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .characterRating {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .dungeonName {
+            font-size: 1em;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .keyLevel {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .keyRating {
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .keyDate {
+            font-size: 0.8em;
+            color: darkgray;
+        }
+
+        .characterImg {
+            width: 100px;
+        }
+
+    </style>
+
+
+    <table>
+        <thead>
+            <tr>
+                <td>{# Dungeon #}</td>
+                {% for character in characters %}
+                <th>
+                    <img class="characterImg" src="{{ character.medias['inset'] ?? '' }}">
+                    <br>
+                    <h2>{{ character.displayName }}</h2>
+                    <br>
+
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>ilvl</th>
+                {% for character in characters %}
+                    <td>
+                        <span class="characterIlvl">
+                            {{ character.ilvl }}
+                        </span>
+                    </td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <th>MM+</th>
+                {% for character in characters %}
+                    <td>
+                        <span class="characterRating" style="color: {{ '#'~character.ratingRGB }}">
+                            {{ character.rating }}
+                        </span>
+                    </td>
+                {% endfor %}
+            </tr>
+            {% for affixId,affix in {
+                10: "Fortifié",
+                 9: "Tyrannique"
+            } %}
+                <tr>
+                    <td colspan="99">
+                        <h2>{{ affix }}</h2>
+                    </td>
+                </tr>
+                {#
+                    197 :  Oeil Azshara
+                    198 :  Fourré sombrecoeur
+                    199 :  Bastion freux
+                    206 :  Repaire Neltharion
+                    207 :  Caveau gardiennes
+                #}
+                {% for dungeon in dungeons|filter(d => d.id not in [
+                    197,198,199,206,207,
+                ]) %}
+                    <tr>
+                        <th class="dungeonName">{{ dungeon.name }}</th>
+                        {% for character in characters %}
+                            <td>
+                                {% set key = character.key(dungeon.id, affixId) %}
+                                {% if key %}
+                                    {% set color = key.isCompleted ? key.ratingRGB : 'CDCDCD' %}
+                                    <span class="keyLevel" style="color: {{ '#'~color }}">
+                                        {{ key.level }}
+                                    </span>
+{#                                    (#}
+{#                                    <span class="keyRating" style="color: {{ '#'~color }}">#}
+{#                                        {{ key.rating }}#}
+{#                                    </span>#}
+{#                                    )#}
+                                    <br>
+                                    <span class="keyDate">
+                                    {{ key.date|date('d/m') }}
+                                    </span>
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock body %}
